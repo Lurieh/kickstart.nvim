@@ -84,6 +84,11 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
+-- azerty is trash, bepo layout is the best.
+-- require 'bepoRemap'
+local bepoVimscript = '~/.config/nvim/.vimrc.bepo'
+vim.cmd('source' .. bepoVimscript)
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -91,7 +96,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +107,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -238,12 +243,39 @@ require('lazy').setup({
   --    require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+  {
+    'numToStr/Comment.nvim',
+    Config = {
+      state = {},
+      config = {
+        padding = true,
+        sticky = true,
+        mappings = {
+          basic = true,
+          extra = true,
+        },
+        toggler = {
+          line = 'gcc',
+          block = 'gkc', -- pas trouvé de remplacement fonctionel pour "gbc"
+        },
+        opleader = {
+          line = 'gc',
+          block = 'gk', -- pas trouvé de remplacement fonctionel pour "gb"
+        },
+        extra = {
+          above = 'gcO',
+          below = 'gco',
+          eol = 'gcA',
+        },
+      },
+    },
+  },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
+  -- NOTE: gitsigns désactivé pour cause de conflits de keymaps
   --    require('gitsigns').setup({ ... })
-  --
+
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -277,7 +309,26 @@ require('lazy').setup({
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
-      require('which-key').setup()
+      require('which-key').setup {
+        plugins = {
+          marks = true, -- shows a list of your marks on ' and `
+          registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+          spelling = {
+            enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+            suggestions = 20, -- how many suggestions should be shown in the list?
+          },
+          presets = {
+            operators = false, -- disable help for operators like d, y, ...
+            motions = true, -- adds help for motions
+            text_objects = true, -- help for text objects triggered after entering an operator
+            windows = true, -- default bindings on <c-w>
+            nav = true, -- misc bindings to work with windows
+            z = true, -- bindings for folds, spelling and others prefixed with z
+            g = false, -- bindings for prefixed with g
+          },
+        },
+        -- Add any other which-key options here
+      }
 
       -- Document existing key chains
       require('which-key').register {
@@ -501,7 +552,7 @@ require('lazy').setup({
 
           -- Opens a popup that displays documentation about the word under your cursor
           --  See `:help K` for why this keymap.
-          map('K', vim.lsp.buf.hover, 'Hover Documentation')
+          map('S', vim.lsp.buf.hover, 'Hover Documentation')
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -565,7 +616,8 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
+        cmake = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -810,7 +862,7 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      --require('mini.surround').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
