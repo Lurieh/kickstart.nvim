@@ -86,7 +86,11 @@ P.S. You can delete this when you're done too. It's your config now! :)
 
 -- azerty is trash, bepo layout is the best.
 -- require 'bepoRemap'
+<<<<<<< HEAD
 local bepoVimscript = '~/.config/nvim/.vimrc.bepo'
+=======
+local bepoVimscript = '.vimrc.bepo'
+>>>>>>> a19a809c5d1e469d143868f21e5b2470494f857e
 vim.cmd('source' .. bepoVimscript)
 
 -- Set <space> as the leader key
