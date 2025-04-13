@@ -27,13 +27,8 @@ noremap R L
 noremap T J
 noremap S K
 " Corollaire : repli suivant / précédent
-<<<<<<< HEAD
 noremap zt zj
 noremap zs zk
-=======
-noremap zs zj
-noremap zt zk
->>>>>>> a19a809c5d1e469d143868f21e5b2470494f857e
 
 " {HJKL} <- [CTSR]
 " ————————————————

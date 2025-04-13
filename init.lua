@@ -84,14 +84,13 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
--- azerty is trash, bepo layout is the best.
+-- azerty is trash, bepo layout was the best.
 -- require 'bepoRemap'
-<<<<<<< HEAD
+--[[
 local bepoVimscript = '~/.config/nvim/.vimrc.bepo'
-=======
-local bepoVimscript = '.vimrc.bepo'
->>>>>>> a19a809c5d1e469d143868f21e5b2470494f857e
 vim.cmd('source' .. bepoVimscript)
+--]]
+require 'lurieh.mappings'
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -333,20 +332,22 @@ require('lazy').setup({
         },
         -- Add any other which-key options here
       }
+      local wk = require 'which-key'
 
-      -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-        ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
-        ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
+      -- Normal mode: Document key chains as groups
+      wk.add {
+        { '<leader>c', group = '[C]ode' },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>s', group = '[S]earch' },
+        { '<leader>w', group = '[W]orkspace' },
+        { '<leader>t', group = '[T]oggle' },
+        { '<leader>h', group = 'Git [H]unk' },
       }
-      -- visual mode
-      require('which-key').register({
-        ['<leader>h'] = { 'Git [H]unk' },
+
+      -- Visual mode: Document a single mapping
+      wk.add({
+        { '<leader>h', desc = 'Git [H]unk' },
       }, { mode = 'v' })
     end,
   },
@@ -824,6 +825,11 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          sources = {
+            per_filetype = {
+              codecompanion = { 'codecompanion' },
+            },
+          },
         },
       }
     end,
@@ -860,7 +866,55 @@ require('lazy').setup({
       --  - yinq - [Y]ank [I]nside [N]ext [']quote
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
-
+      ---[[
+      require('codecompanion').setup {
+        strategies = {
+          chat = {
+            adapter = 'ollama',
+            ollama = {
+              model = 'gemma3:12b',
+              api_url = 'http://127.0.0.1:11434',
+              -- Optional basic parameters with safe defaults
+              options = {
+                temperature = 0.3, -- Lower = more focused responses
+                num_ctx = 2048, -- Context window size
+              },
+            },
+          },
+          inline = {
+            adapter = 'ollama',
+            ollama = {
+              model = 'gemma3:12b',
+              api_url = 'http://127.0.0.1:11434',
+            },
+            -- Crucial for inline completion
+            accept_key = '<Tab>', -- Standard acceptance key
+            show_empty = false, -- Prevent empty suggestions
+            delay = 150, -- Give Ollama time to respond (ms)
+          },
+        },
+      }
+      --]]
+      --[[
+      require('codecompanion').setup {
+        strategies = {
+          chat = {
+            adapter = 'ollama', -- Key change!
+            ollama = {
+              model = 'gemma3:12b', -- Your local model
+              api_url = 'http://127.0.0.1:11434', -- Default Ollama API endpoint
+            },
+          },
+          inline = {
+            adapter = 'ollama', -- Same for inline completions
+            ollama = {
+              model = 'gemma3:12b',
+              api_url = 'http://127.0.0.1:11434',
+            },
+          },
+        },
+      }
+      --]]
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
@@ -942,6 +996,19 @@ require('lazy').setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
+  {
+    'vhyrro/luarocks.nvim',
+    priority = 1000, -- Very high priority is required, luarocks.nvim should run as the first plugin in your config.
+    config = true,
+  },
+  {
+    'olimorris/codecompanion.nvim',
+    config = true,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
